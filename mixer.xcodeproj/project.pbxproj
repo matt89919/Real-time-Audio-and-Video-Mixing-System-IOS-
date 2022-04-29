@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C967D2DC281BB6A700783351 /* createview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DB281BB6A700783351 /* createview.swift */; };
+		C967D2DE281BB72500783351 /* joinview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DD281BB72500783351 /* joinview.swift */; };
+		C967D2E0281BB78B00783351 /* firstview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DF281BB78B00783351 /* firstview.swift */; };
+		C967D2E2281BB7F700783351 /* recordersettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E1281BB7F700783351 /* recordersettings.swift */; };
+		C967D2E4281BB82C00783351 /* recordview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E3281BB82C00783351 /* recordview.swift */; };
 		C9A8F2E827F19BEE00F250B1 /* mixerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */; };
 		C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8F2E927F19BEE00F250B1 /* ContentView.swift */; };
 		C9A8F2EC27F19BF000F250B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9A8F2EB27F19BF000F250B1 /* Assets.xcassets */; };
@@ -35,6 +40,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C967D2DB281BB6A700783351 /* createview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = createview.swift; sourceTree = "<group>"; };
+		C967D2DD281BB72500783351 /* joinview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = joinview.swift; sourceTree = "<group>"; };
+		C967D2DF281BB78B00783351 /* firstview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = firstview.swift; sourceTree = "<group>"; };
+		C967D2E1281BB7F700783351 /* recordersettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordersettings.swift; sourceTree = "<group>"; };
+		C967D2E3281BB82C00783351 /* recordview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordview.swift; sourceTree = "<group>"; };
 		C9A8F2E427F19BEE00F250B1 /* mixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mixer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mixerApp.swift; sourceTree = "<group>"; };
 		C9A8F2E927F19BEE00F250B1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -101,6 +111,11 @@
 				C9A8F31127F20A7C00F250B1 /* Info.plist */,
 				C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */,
 				C9A8F2E927F19BEE00F250B1 /* ContentView.swift */,
+				C967D2DB281BB6A700783351 /* createview.swift */,
+				C967D2DD281BB72500783351 /* joinview.swift */,
+				C967D2DF281BB78B00783351 /* firstview.swift */,
+				C967D2E1281BB7F700783351 /* recordersettings.swift */,
+				C967D2E3281BB82C00783351 /* recordview.swift */,
 				C9A8F2EB27F19BF000F250B1 /* Assets.xcassets */,
 				C9A8F2ED27F19BF000F250B1 /* Preview Content */,
 			);
@@ -263,7 +278,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */,
+				C967D2E0281BB78B00783351 /* firstview.swift in Sources */,
+				C967D2DE281BB72500783351 /* joinview.swift in Sources */,
 				C9A8F31327F2F31200F250B1 /* Extensions.swift in Sources */,
+				C967D2DC281BB6A700783351 /* createview.swift in Sources */,
+				C967D2E4281BB82C00783351 /* recordview.swift in Sources */,
+				C967D2E2281BB7F700783351 /* recordersettings.swift in Sources */,
 				C9A8F2E827F19BEE00F250B1 /* mixerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
