@@ -11,6 +11,7 @@ import Foundation
 import Combine
 import AVFoundation
 
+
 class AudioRecorder: NSObject,ObservableObject {
     
     override init() {
@@ -95,24 +96,7 @@ class AudioRecorder: NSObject,ObservableObject {
             return audioRecorder
     }
 }
-/*
-struct ImagePickerView: UIViewControllerRepresentable {
 
-    @Binding var selectedImage: UIImage?
-    @Environment(\.presentationMode) var isPresented
-    var sourceType: UIImagePickerController.SourceType
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let imagePicker = UIImagePickerController()
-        imagePicker.sourceType = self.sourceType
-        return imagePicker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
-
-    }
-}
- */
 struct RecordingRow: View {
     
     var audioURL: URL
@@ -124,7 +108,6 @@ struct RecordingRow: View {
         }
     }
 }
-
 
 
 struct recordView: View {
@@ -234,11 +217,47 @@ struct recordView: View {
     
 }
 
-
+struct createView: View {
+    @Binding var created:Int
+    
+    var body: some View{
+        
+        VStack{
+            HStack{
+                Button{
+                    created=0
+                }label: {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(Color.gray)
+                        .font(.system(size: 50))
+                        .padding()
+                }
+                Spacer()
+            }
+            Spacer()
+            
+            Text("created!!!!!")
+            
+            Spacer()
+            
+            Button{
+                created=0
+            }label: {
+                Text("Go back to home page")
+                    .padding()
+                    .frame(width: 200, height: 70)
+                    .foregroundColor(Color.black)
+                    .background(Color.gray)
+            }
+            
+            Spacer()
+        }
+    }
+}
 
 
 struct joinView: View {
-    
+    @Binding var created:Int
     var textFieldBorder: some View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.gray, lineWidth: 5)
@@ -247,6 +266,17 @@ struct joinView: View {
     var body: some View{
         
         VStack(){
+            HStack{
+                Button{
+                    created=0
+                }label: {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(Color.gray)
+                        .font(.system(size: 50))
+                        .padding()
+                }
+                Spacer()
+            }
             Spacer()
             Button{
                 
@@ -305,9 +335,25 @@ struct joinView: View {
 }
 
 struct ContentView: View {
-    
+    @State var created=0
+    var body: some View{
+        if (created==1){
+            createView(created: $created)
+        }else if (created==2){
+            joinView(created: $created)
+        }else{
+            firstview(created: $created)
+        }
+    }
+}
+
+struct firstview: View{
+    @Binding var created:Int
     @State var roomnum=""
-    @State var isactive=true
+    @State var isactive=false
+    @State var sendtoserver=""
+    @State var isresponse=false
+    @State var responsestr=""
     var textFieldBorder: some View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.gray, lineWidth: 1)
@@ -352,23 +398,93 @@ struct ContentView: View {
                 Spacer()
                 
                 
-                NavigationLink(destination: {Text("create")} ) {
-                    Text("CREATE")
-                        .padding()
-                        .frame(width: 200, height: 70)
-                        .foregroundColor(Color.black)
-                        .background(Color.gray)
-                }
+                
+                    Button {
+                            // run your code
+                            // send requset to server
+                            sendtoserver="action=CREATE&room_number="+roomnum
+                            let url = URL(string: "http://140.116.82.135:5000/Room")!
+                            var request = URLRequest(url: url)
+                            request.httpMethod = "POST"
+                            let dat=sendtoserver.data(using: .utf8)
+                            request.httpBody=dat
+
+                            URLSession.shared.dataTask(with: request){ data, response, error in
+                                guard let data = data,
+                                      let response = response as? HTTPURLResponse,
+                                      error == nil else{
+                                      print("err")
+                                      return
+                                }
+                                
+                                let str = String(data:data, encoding: .utf8)
+                                print(str ?? "no response")
+                                responsestr = str ?? ""
+
+                            }.resume()
+                            //end of request
+                            
+                            // then set
+//                            if(isresponse==true){
+//                                if(responsestr.prefix(2)=="Ok"){
+//                                    created=2
+//                                }
+//                            }
+
+                        } label: {
+                            Text("CREATE")
+                                .padding()
+                                .frame(width: 200, height: 70)
+                                .foregroundColor(Color.black)
+                                .background(Color.gray)
+                        }
+                
+                .onChange(of: responsestr, perform: { _ in
+                    if(responsestr.prefix(2)=="Ok"){
+                        created=1
+                    }
+                })
                 
                 Spacer()
                 
-                NavigationLink(destination: joinView()) {
-                    Text("JOIN")
-                        .padding()
-                        .frame(width: 200, height: 70)
-                        .foregroundColor(Color.black)
-                        .background(Color.gray)
-                }
+                
+                    Button {
+                            // run your code
+                            sendtoserver="action=JOIN&room_number="+roomnum
+                            let url = URL(string: "http://140.116.82.135:5000/Room")!
+                            var request = URLRequest(url: url)
+                            request.httpMethod = "POST"
+                            let dat=sendtoserver.data(using: .utf8)
+                            request.httpBody=dat
+
+                            URLSession.shared.dataTask(with: request){ data, response, error in
+                                guard let data = data,
+                                      let response = response as? HTTPURLResponse,
+                                      error == nil else{
+                                      print("err")
+                                      return
+                                }
+                                
+                                let str = String(data:data, encoding: .utf8)
+                                print(str ?? "no response")
+                                responsestr = str ?? ""
+
+                            }.resume()
+                            // then set
+                            //isactive = true
+
+                        } label: {
+                            Text("JOIN")
+                                .padding()
+                                .frame(width: 200, height: 70)
+                                .foregroundColor(Color.black)
+                                .background(Color.gray)
+                        }
+                        .onChange(of: responsestr, perform: { _ in
+                            if(responsestr.prefix(2)=="Yes"){
+                                created=2
+                            }
+                        })
                 
                 
                 
@@ -377,9 +493,8 @@ struct ContentView: View {
                 
             }
         }
-
-      
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
