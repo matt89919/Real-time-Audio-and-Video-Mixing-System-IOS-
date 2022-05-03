@@ -12,7 +12,7 @@ import Combine
 import AVFoundation
 import Alamofire
 
-struct recordView: View {
+struct recodView: View {
     @Binding var created:Int
     @Binding var roomnum:String
     @ObservedObject var audioRecorder: AudioRecorder
@@ -21,7 +21,6 @@ struct recordView: View {
     @State var seconds: Int = 0
     @State var timerIsPaused: Bool = true
     @State var timer: Timer? = nil
-    @State var fileurl: URL? = nil
     
     var body: some View{
         
@@ -61,7 +60,7 @@ struct recordView: View {
                 
                 if audioRecorder.recording == false {
                     Button(action: {
-                        fileurl = self.audioRecorder.startRecording()
+                        self.audioRecorder.startRecording()
                         startTimer()
                     }) {
                         Image(systemName: "record.circle")
@@ -76,44 +75,6 @@ struct recordView: View {
                     Button(action: {
                         self.audioRecorder.stopRecording()
                         stopTimer()
-                        
-                        
-                        let voiceData = try? Data(contentsOf: fileurl!)
-                        let filename = fileurl?.lastPathComponent
-                        let url = URL(string: "http://192.168.0.101:8000/Audio_store")!
-//                        let headers : Alamofire.HTTPHeaders = [
-//                                    "cache-control" : "no-cache",
-//                                    "Accept-Language" : "en",
-//                                    "Connection" : "close"
-//                                ]
-                             //generate boundary string using a unique per-app string
-                        let boundary = UUID().uuidString
-                                                    let session = URLSession.shared
-                                                    var urlRequest = URLRequest(url: url)
-                                                    urlRequest.httpMethod = "POST"
-                                                    urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-                                                    var data = Data()
-
-                                                    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-                                                    data.append("room_number=\"\(roomnum)\"".data(using: .utf8)!)
-                                                data.append("Content-Disposition: form-data; name=\"audio\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
-                                                    data.append(voiceData!)
-                                                    data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-
-                                                    // Send a POST request to the URL, with the data we created earlier
-                                                    session.uploadTask(with: urlRequest, from: data, completionHandler: { data, response, error in
-                                                        guard let data = data,
-                                                              let response = response as? HTTPURLResponse,
-                                                              error == nil else{
-                                                              print("err")
-                                                              return
-                                                        }
-                                                        let str = String(data:data, encoding: .utf8)
-                                                        print(str ?? "no response")
-                                                       // responsestr = str ?? ""
-                                                    }).resume()
-                        
                     }) {
                         Image(systemName: "record.circle.fill")
                             .resizable()
@@ -126,10 +87,7 @@ struct recordView: View {
                 }
                 
                 Spacer()
-                Button{
-                    
-                        
-                }label:
+                Button(action: {print("upload")})
                 {
                     Image(systemName: "square.and.arrow.up.fill")
                         .resizable()

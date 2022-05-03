@@ -12,6 +12,11 @@
 		C967D2E0281BB78B00783351 /* firstview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DF281BB78B00783351 /* firstview.swift */; };
 		C967D2E2281BB7F700783351 /* recordersettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E1281BB7F700783351 /* recordersettings.swift */; };
 		C967D2E4281BB82C00783351 /* recordview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E3281BB82C00783351 /* recordview.swift */; };
+		C967D2E6281BDCFD00783351 /* cameraview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E5281BDCFD00783351 /* cameraview.swift */; };
+		C967D2E9281FB37B00783351 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C967D2E8281FB37B00783351 /* Alamofire */; };
+		C967D2EB281FF3DB00783351 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2EA281FF3DB00783351 /* test.swift */; };
+		C967D2ED282171B500783351 /* test in Resources */ = {isa = PBXBuildFile; fileRef = C967D2EC282171B500783351 /* test */; };
+		C967D2F12821A58F00783351 /* CameraManager in Frameworks */ = {isa = PBXBuildFile; productRef = C967D2F02821A58F00783351 /* CameraManager */; };
 		C9A8F2E827F19BEE00F250B1 /* mixerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */; };
 		C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8F2E927F19BEE00F250B1 /* ContentView.swift */; };
 		C9A8F2EC27F19BF000F250B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9A8F2EB27F19BF000F250B1 /* Assets.xcassets */; };
@@ -45,6 +50,9 @@
 		C967D2DF281BB78B00783351 /* firstview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = firstview.swift; sourceTree = "<group>"; };
 		C967D2E1281BB7F700783351 /* recordersettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordersettings.swift; sourceTree = "<group>"; };
 		C967D2E3281BB82C00783351 /* recordview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordview.swift; sourceTree = "<group>"; };
+		C967D2E5281BDCFD00783351 /* cameraview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cameraview.swift; sourceTree = "<group>"; };
+		C967D2EA281FF3DB00783351 /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
+		C967D2EC282171B500783351 /* test */ = {isa = PBXFileReference; lastKnownFileType = text; path = test; sourceTree = "<group>"; };
 		C9A8F2E427F19BEE00F250B1 /* mixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mixer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mixerApp.swift; sourceTree = "<group>"; };
 		C9A8F2E927F19BEE00F250B1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -64,6 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C967D2E9281FB37B00783351 /* Alamofire in Frameworks */,
+				C967D2F12821A58F00783351 /* CameraManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,9 +125,12 @@
 				C967D2DD281BB72500783351 /* joinview.swift */,
 				C967D2DF281BB78B00783351 /* firstview.swift */,
 				C967D2E1281BB7F700783351 /* recordersettings.swift */,
+				C967D2E5281BDCFD00783351 /* cameraview.swift */,
 				C967D2E3281BB82C00783351 /* recordview.swift */,
+				C967D2EA281FF3DB00783351 /* test.swift */,
 				C9A8F2EB27F19BF000F250B1 /* Assets.xcassets */,
 				C9A8F2ED27F19BF000F250B1 /* Preview Content */,
+				C967D2EC282171B500783351 /* test */,
 			);
 			path = mixer;
 			sourceTree = "<group>";
@@ -163,6 +176,10 @@
 			dependencies = (
 			);
 			name = mixer;
+			packageProductDependencies = (
+				C967D2E8281FB37B00783351 /* Alamofire */,
+				C967D2F02821A58F00783351 /* CameraManager */,
+			);
 			productName = mixer;
 			productReference = C9A8F2E427F19BEE00F250B1 /* mixer.app */;
 			productType = "com.apple.product-type.application";
@@ -235,6 +252,10 @@
 				Base,
 			);
 			mainGroup = C9A8F2DB27F19BEE00F250B1;
+			packageReferences = (
+				C967D2E7281FB37B00783351 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				C967D2EF2821A58F00783351 /* XCRemoteSwiftPackageReference "CameraManager" */,
+			);
 			productRefGroup = C9A8F2E527F19BEE00F250B1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -253,6 +274,7 @@
 			files = (
 				C9A8F2EF27F19BF000F250B1 /* Preview Assets.xcassets in Resources */,
 				C9A8F2EC27F19BF000F250B1 /* Assets.xcassets in Resources */,
+				C967D2ED282171B500783351 /* test in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,8 +302,10 @@
 				C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */,
 				C967D2E0281BB78B00783351 /* firstview.swift in Sources */,
 				C967D2DE281BB72500783351 /* joinview.swift in Sources */,
+				C967D2EB281FF3DB00783351 /* test.swift in Sources */,
 				C9A8F31327F2F31200F250B1 /* Extensions.swift in Sources */,
 				C967D2DC281BB6A700783351 /* createview.swift in Sources */,
+				C967D2E6281BDCFD00783351 /* cameraview.swift in Sources */,
 				C967D2E4281BB82C00783351 /* recordview.swift in Sources */,
 				C967D2E2281BB7F700783351 /* recordersettings.swift in Sources */,
 				C9A8F2E827F19BEE00F250B1 /* mixerApp.swift in Sources */,
@@ -615,6 +639,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C967D2E7281FB37B00783351 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+		C967D2EF2821A58F00783351 /* XCRemoteSwiftPackageReference "CameraManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/imaginary-cloud/CameraManager";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C967D2E8281FB37B00783351 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C967D2E7281FB37B00783351 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		C967D2F02821A58F00783351 /* CameraManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C967D2EF2821A58F00783351 /* XCRemoteSwiftPackageReference "CameraManager" */;
+			productName = CameraManager;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C9A8F2DC27F19BEE00F250B1 /* Project object */;
 }

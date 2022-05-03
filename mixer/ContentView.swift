@@ -21,8 +21,10 @@ struct ContentView: View {
         case 2:
             joinView(created: $created, roomnum: $roomnum)
         case 3:
-            recordView(created: $created, audioRecorder: AudioRecorder())
-
+            recordView(created: $created, roomnum: $roomnum, audioRecorder: AudioRecorder())
+        case 4:
+            cameraview(created: $created, roomnum: $roomnum)
+            
         default:
             firstview(created: $created, roomnum: $roomnum)
         }

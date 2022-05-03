@@ -10,6 +10,7 @@ import UIKit
 import Foundation
 import Combine
 import AVFoundation
+import Alamofire
 
 struct firstview: View{
     @Binding var created:Int
@@ -69,7 +70,7 @@ struct firstview: View{
                             // run your code
                             // send requset to server
                             sendtoserver="action=CREATE&room_number="+roomnum
-                            let url = URL(string: "http://140.116.82.135:5000/Room")!
+                            let url = URL(string: "http://192.168.0.101:8000/Room")!
                             var request = URLRequest(url: url)
                             request.httpMethod = "POST"
                             let dat=sendtoserver.data(using: .utf8)
@@ -119,7 +120,7 @@ struct firstview: View{
                     Button {
                             // run your code
                             sendtoserver="action=JOIN&room_number="+roomnum
-                            let url = URL(string: "http://140.116.82.135:5000/Room")!
+                            let url = URL(string: "http://192.168.0.101:8000/Room")!
                             var request = URLRequest(url: url)
                             request.httpMethod = "POST"
                             let dat=sendtoserver.data(using: .utf8)
@@ -138,6 +139,13 @@ struct firstview: View{
                                 responsestr = str ?? ""
 
                             }.resume()
+                        
+//                            AF.upload(multipartFormData: { multipartFormData in
+//                                multipartFormData.append(Data("JOIN".utf8), withName: "action")
+//                                multipartFormData.append(Data(roomnum.utf8), withName: "room_number")
+//                            }, to: "http://192.168.0.101:8000/Room", method: .post){ result in
+//                                print(result)
+//                            }
                             // then set
                             //isactive = true
 

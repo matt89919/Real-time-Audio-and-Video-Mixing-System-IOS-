@@ -56,7 +56,7 @@ class AudioRecorder: NSObject,ObservableObject {
         }
     }
     
-    func startRecording() {
+    func startRecording() -> URL{
         let recordingSession = AVAudioSession.sharedInstance()
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
@@ -85,7 +85,7 @@ class AudioRecorder: NSObject,ObservableObject {
                     print("Could not start recording")
                 }
         
-        //////////
+        return audioFilename
     }
     
     func stopRecording() -> AVAudioRecorder {
