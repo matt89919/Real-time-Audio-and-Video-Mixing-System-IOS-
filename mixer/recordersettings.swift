@@ -88,11 +88,10 @@ class AudioRecorder: NSObject,ObservableObject {
         return audioFilename
     }
     
-    func stopRecording() -> AVAudioRecorder {
+    func stopRecording()  {
             audioRecorder.stop()
             recording = false
             fetchRecordings()
-            return audioRecorder
     }
 }
 
@@ -105,5 +104,15 @@ struct RecordingRow: View {
             Text("\(audioURL.lastPathComponent)")
             Spacer()
         }
+    }
+}
+
+extension Date {
+    var millisecondsSince1970: Int64 {
+        Int64((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
+    
+    init(milliseconds: Int64) {
+        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
     }
 }

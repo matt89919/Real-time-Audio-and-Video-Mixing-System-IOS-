@@ -23,6 +23,10 @@ struct recordView: View {
     @State var timer: Timer? = nil
     @State var fileurl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     @State var recorded: Bool = false
+    @State var file: String = ""
+    @State var timestamp1: String = ""
+    @State var timestamp2: String = ""
+    @State var infourl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     
     
     var body: some View{
@@ -64,7 +68,9 @@ struct recordView: View {
                 if audioRecorder.recording == false {
                     Button(action: {
                         fileurl = self.audioRecorder.startRecording()
+                        timestamp1="\(Date().millisecondsSince1970)\n"
                         startTimer()
+                        file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".m4a", with: ".txt")
                     }) {
                         Image(systemName: "record.circle")
                             .resizable()
@@ -75,11 +81,25 @@ struct recordView: View {
                             .padding(.bottom, 40)
                     }
                 } else {
-                    Button(action: {
+                    Button{
                         self.audioRecorder.stopRecording()
+                        timestamp2="\(Date().millisecondsSince1970)"
+                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                            infourl = dir.appendingPathComponent(file)
+                            //writing
+                            do {
+                                let tsinfo=timestamp1+timestamp2
+                                try tsinfo.write(to: infourl, atomically: false, encoding: .utf8)
+                            }
+                            catch {
+                                print("error txt")
+                            }
+
                         stopTimer()
                         recorded=true
-                    }) {
+                        }
+                        
+                    } label:{
                         Image(systemName: "record.circle.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -95,7 +115,9 @@ struct recordView: View {
                 Button{
                     if(recorded==true){
                         let voiceData = try? Data(contentsOf: fileurl)
+                        let infodata = try? Data(contentsOf: infourl)
                         let filename = fileurl.lastPathComponent
+                        let infoname = infourl.lastPathComponent
                         let url = URL(string: "http://140.116.82.135:5000/Audio_store")!
     //                        let headers : Alamofire.HTTPHeaders = [
     //                                    "cache-control" : "no-cache",
@@ -115,8 +137,8 @@ struct recordView: View {
                                                     data.append("Content-Disposition: form-data; name=\"audio\"; filename=\"\(filename)\"\r\n\r\n".data(using: .utf8)!)
                                                     data.append(voiceData!)
                                                     data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-                                                    data.append("Content-Disposition: form-data; name=\"audio_info\"; filename=\"1111.txt\"\r\n\r\n".data(using: .utf8)!)
-                                                    data.append(voiceData!)
+                                                    data.append("Content-Disposition: form-data; name=\"audio_info\"; filename=\"\(infoname)\"\r\n\r\n".data(using: .utf8)!)
+                                                    data.append(infodata!)
                                                     data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
                                                     data.append("Content-Disposition: form-data; name=\"room_number\"\r\n\r\n\(roomnum)".data(using: .utf8)!)
                                                     data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
