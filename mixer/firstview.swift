@@ -70,7 +70,7 @@ struct firstview: View{
                             // run your code
                             // send requset to server
                             sendtoserver="action=CREATE&room_number="+roomnum
-                            let url = URL(string: "http://192.168.0.101:8000/Room")!
+                            let url = URL(string: "http://140.116.82.135:5000/Room")!
                             var request = URLRequest(url: url)
                             request.httpMethod = "POST"
                             let dat=sendtoserver.data(using: .utf8)
@@ -120,7 +120,7 @@ struct firstview: View{
                     Button {
                             // run your code
                             sendtoserver="action=JOIN&room_number="+roomnum
-                            let url = URL(string: "http://192.168.0.101:8000/Room")!
+                            let url = URL(string: "http://140.116.82.135:5000/Room")!
                             var request = URLRequest(url: url)
                             request.httpMethod = "POST"
                             let dat=sendtoserver.data(using: .utf8)

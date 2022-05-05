@@ -21,7 +21,9 @@ struct recordView: View {
     @State var seconds: Int = 0
     @State var timerIsPaused: Bool = true
     @State var timer: Timer? = nil
-    @State var fileurl: URL? = nil
+    @State var fileurl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    @State var recorded: Bool = false
+    
     
     var body: some View{
         
@@ -76,16 +78,30 @@ struct recordView: View {
                     Button(action: {
                         self.audioRecorder.stopRecording()
                         stopTimer()
-                        
-                        
-                        let voiceData = try? Data(contentsOf: fileurl!)
-                        let filename = fileurl?.lastPathComponent
-                        let url = URL(string: "http://192.168.0.101:8000/Audio_store")!
-//                        let headers : Alamofire.HTTPHeaders = [
-//                                    "cache-control" : "no-cache",
-//                                    "Accept-Language" : "en",
-//                                    "Connection" : "close"
-//                                ]
+                        recorded=true
+                    }) {
+                        Image(systemName: "record.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 100, height: 100)
+                            .clipped()
+                            .foregroundColor(.red)
+                            .padding(.bottom, 40.0)
+                    }
+                }
+                
+                Spacer()
+                
+                Button{
+                    if(recorded==true){
+                        let voiceData = try? Data(contentsOf: fileurl)
+                        let filename = fileurl.lastPathComponent
+                        let url = URL(string: "http://140.116.82.135:5000/Audio_store")!
+    //                        let headers : Alamofire.HTTPHeaders = [
+    //                                    "cache-control" : "no-cache",
+    //                                    "Accept-Language" : "en",
+    //                                    "Connection" : "close"
+    //                                ]
                              //generate boundary string using a unique per-app string
                         let boundary = UUID().uuidString
                                                     let session = URLSession.shared
@@ -95,10 +111,14 @@ struct recordView: View {
 
                                                     var data = Data()
 
-                                                    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-                                                    data.append("room_number=\"\(roomnum)\"".data(using: .utf8)!)
-                                                data.append("Content-Disposition: form-data; name=\"audio\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+                                                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
+                                                    data.append("Content-Disposition: form-data; name=\"audio\"; filename=\"\(filename)\"\r\n\r\n".data(using: .utf8)!)
                                                     data.append(voiceData!)
+                                                    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+                                                    data.append("Content-Disposition: form-data; name=\"audio_info\"; filename=\"1111.txt\"\r\n\r\n".data(using: .utf8)!)
+                                                    data.append(voiceData!)
+                                                    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+                                                    data.append("Content-Disposition: form-data; name=\"room_number\"\r\n\r\n\(roomnum)".data(using: .utf8)!)
                                                     data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
 
                                                     // Send a POST request to the URL, with the data we created earlier
@@ -113,21 +133,9 @@ struct recordView: View {
                                                         print(str ?? "no response")
                                                        // responsestr = str ?? ""
                                                     }).resume()
-                        
-                    }) {
-                        Image(systemName: "record.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100)
-                            .clipped()
-                            .foregroundColor(.red)
-                            .padding(.bottom, 40.0)
+                    }else{
+                        print("didnt recorded yet!")
                     }
-                }
-                
-                Spacer()
-                Button{
-                    
                         
                 }label:
                 {

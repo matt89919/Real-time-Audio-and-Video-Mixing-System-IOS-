@@ -86,7 +86,7 @@ struct createView: View {
             
             Button{
                 let sendtoserver="roomnumbersetting="+roomnum+"&audioSetting="+rate
-                let url = URL(string: "http://192.168.0.101:8000/Setting")!
+                let url = URL(string: "http://140.116.82.135:5000/Setting")!
                 var request = URLRequest(url: url)
                 request.httpMethod = "POST"
                 let dat=sendtoserver.data(using: .utf8)

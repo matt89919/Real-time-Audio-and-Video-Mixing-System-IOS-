@@ -11,87 +11,195 @@ import Foundation
 import Combine
 import AVFoundation
 
-struct ImagePicker: UIViewControllerRepresentable {
+struct VideoRecordingView: UIViewRepresentable {
     
-    var sourceType: UIImagePickerController.SourceType = .photoLibrary
+    @Binding var timeLeft: Int
+    @Binding var onComplete: Bool
+    @Binding var recording: Bool
     
-    @Binding var selectedImage: UIImage
-    @Environment(\.presentationMode) private var presentationMode
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
-        
-        let imagePicker = UIImagePickerController()
-        imagePicker.allowsEditing = false
-        imagePicker.sourceType = sourceType
-        imagePicker.delegate = context.coordinator
-        
-        return imagePicker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {
-        
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        
-        var parent: ImagePicker
-        
-        init(_ parent: ImagePicker) {
-            self.parent = parent
+    func makeUIView(context: UIViewRepresentableContext<VideoRecordingView>) -> PreviewView {
+        let recordingView = PreviewView()
+        recordingView.onComplete = {
+            self.onComplete = true
         }
         
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            
-            if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-                parent.selectedImage = image
-            }
-            
-            parent.presentationMode.wrappedValue.dismiss()
+        recordingView.onRecord = { timeLeft, totalShakes in
+            self.timeLeft = timeLeft
+            self.recording = true
+        }
+        
+        recordingView.onReset = {
+            self.recording = false
+            self.timeLeft = 30
+        }
+        return recordingView
+    }
+    
+    func updateUIView(_ uiViewController: PreviewView, context: UIViewRepresentableContext<VideoRecordingView>) {
+        if recording {
+            uiViewController.start()
         }
     }
 }
 
-struct cameraview: View {
-        @Binding var created:Int
-        @Binding var roomnum:String
-        @State private var isShowPhotoLibrary = false
-        @State private var image = UIImage()
+extension PreviewView: AVCaptureFileOutputRecordingDelegate{
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        print(outputFileURL.absoluteString)
+    }
+}
+
+class PreviewView: UIView {
+    private var captureSession: AVCaptureSession?
+    private var shakeCountDown: Timer?
+    let videoFileOutput = AVCaptureMovieFileOutput()
+    var recordingDelegate:AVCaptureFileOutputRecordingDelegate!
+    var recorded = 0
+    var secondsToReachGoal = 30
+    
+    var onRecord: ((Int, Int)->())?
+    var onReset: (() -> ())?
+    var onComplete: (() -> ())?
+    
+    init() {
+        super.init(frame: .zero)
         
-        var body: some View {
-            VStack {
-                
-                Image(uiImage: self.image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(minWidth: 0, maxWidth: .infinity)
-                    .edgesIgnoringSafeArea(.all)
-                
-                Button(action: {
-                    self.isShowPhotoLibrary = true
-                }) {
-                    HStack {
-                        Image(systemName: "photo")
-                            .font(.system(size: 20))
-                            
-                        Text("Photo library")
-                            .font(.headline)
-                    }
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: 50)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(20)
-                    .padding(.horizontal)
-                }
-            }
-            .sheet(isPresented: $isShowPhotoLibrary) {
-                ImagePicker(sourceType: .camera, selectedImage: self.$image)
+        var allowedAccess = false
+        let blocker = DispatchGroup()
+        blocker.enter()
+        AVCaptureDevice.requestAccess(for: .video) { flag in
+            allowedAccess = flag
+            blocker.leave()
+        }
+        blocker.wait()
+        
+        if !allowedAccess {
+            print("!!! NO ACCESS TO CAMERA")
+            return
+        }
+        
+        // setup session
+        let session = AVCaptureSession()
+        session.beginConfiguration()
+        
+        let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                                  for: .video, position: .front)
+        guard videoDevice != nil, let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!), session.canAddInput(videoDeviceInput) else {
+            print("!!! NO CAMERA DETECTED")
+            return
+        }
+        session.addInput(videoDeviceInput)
+        session.commitConfiguration()
+        self.captureSession = session
+    }
+    
+    override class var layerClass: AnyClass {
+        AVCaptureVideoPreviewLayer.self
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+        return layer as! AVCaptureVideoPreviewLayer
+    }
+    
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        recordingDelegate = self
+    }
+    
+    func start() {
+        startTimers()
+        if nil != self.superview {
+            self.videoPreviewLayer.session = self.captureSession
+            self.videoPreviewLayer.videoGravity = .resizeAspect
+            self.captureSession?.startRunning()
+            self.startRecording()
+        } else {
+            self.captureSession?.stopRunning()
+        }
+    }
+    private func onTimerFires(){
+        print("🟢 RECORDING \(videoFileOutput.isRecording)")
+        secondsToReachGoal -= 1
+        recorded += 1
+        onRecord?(secondsToReachGoal, recorded)
+        
+        if(secondsToReachGoal == 0){
+            stopRecording()
+            shakeCountDown?.invalidate()
+            shakeCountDown = nil
+            onComplete?()
+            videoFileOutput.stopRecording()
+        }
+    }
+    
+    func startTimers(){
+        if shakeCountDown == nil {
+            shakeCountDown = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] (timer) in
+                self?.onTimerFires()
             }
         }
     }
+    
+    func startRecording(){
+        captureSession?.addOutput(videoFileOutput)
+        
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePath = documentsURL.appendingPathComponent("tempPZDC")
+        
+        videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
+    }
+    
+    func stopRecording(){
+        videoFileOutput.stopRecording()
+        print("🔴 RECORDING \(videoFileOutput.isRecording)")
+    }
+}
+
+   
+struct cameraview: View {
+    @Binding var created:Int
+    @Binding var roomnum:String
+    @State private var timer = 5
+    @State private var onComplete = false
+    @State private var recording = false
+    
+    var body: some View {
+        ZStack {
+            VideoRecordingView(timeLeft: $timer, onComplete: $onComplete, recording: $recording)
+            VStack {
+                Button(action: {self.recording.toggle()}, label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 65, height: 65)
+                    
+                    Circle()
+                        .stroke(Color.white,lineWidth: 2)
+                        .frame(width: 75, height: 75)
+                }
+            })
+                Button(action: {
+                    self.timer -= 1
+                    print(self.timer)
+                }, label: {
+                    Text("Toggle timer")
+                })
+                    .foregroundColor(.white)
+                    .padding()
+                Button(action: {
+                    self.onComplete.toggle()
+                }, label: {
+                    Text("Toggle completion")
+                })
+                    .foregroundColor(.white)
+                    .padding()
+            }
+        }
+    }
+}
 
 
 
