@@ -56,7 +56,8 @@ class AudioRecorder: NSObject,ObservableObject {
         }
     }
     
-    func startRecording() -> URL{
+    func startRecording(framerate:String) -> URL{
+        print(framerate)
         let recordingSession = AVAudioSession.sharedInstance()
         do {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
@@ -72,7 +73,7 @@ class AudioRecorder: NSObject,ObservableObject {
         ////////
         let settings = [
                     AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                    AVSampleRateKey: 12000,
+                    AVSampleRateKey: Int(framerate),
                     AVNumberOfChannelsKey: 1,
                     AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
                 ]

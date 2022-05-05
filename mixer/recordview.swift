@@ -15,6 +15,7 @@ import Alamofire
 struct recordView: View {
     @Binding var created:Int
     @Binding var roomnum:String
+    @Binding var framerate:String
     @ObservedObject var audioRecorder: AudioRecorder
     @State var hours: Int = 0
     @State var minutes: Int = 0
@@ -47,10 +48,22 @@ struct recordView: View {
             }
             
             Spacer()
-            List {
-                ForEach(audioRecorder.recordings, id: \.createdAt) { recording in
-                RecordingRow(audioURL: recording.fileURL)
-                }
+            if(recorded){
+                Text("starting timestamp: "+timestamp1)
+                    .font(.system(size: 25))
+                    .foregroundColor(.gray)
+                    .padding()
+                
+                Text("stopping timestamp: "+timestamp2)
+                    .font(.system(size: 25))
+                    .foregroundColor(.gray)
+                    .padding()
+            
+            
+                Text(fileurl.lastPathComponent)
+                    .font(.system(size: 20))
+                    .foregroundColor(.gray)
+                    .padding()
             }
             
             Text("\(hours):\(minutes):\(seconds)")
@@ -67,7 +80,7 @@ struct recordView: View {
                 
                 if audioRecorder.recording == false {
                     Button(action: {
-                        fileurl = self.audioRecorder.startRecording()
+                        fileurl = self.audioRecorder.startRecording(framerate: framerate)
                         timestamp1="\(Date().millisecondsSince1970)\n"
                         startTimer()
                         file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".m4a", with: ".txt")

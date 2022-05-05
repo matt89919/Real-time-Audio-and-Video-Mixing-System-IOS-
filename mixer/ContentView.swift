@@ -14,14 +14,15 @@ import AVFoundation
 struct ContentView: View {
     @State var created = 0
     @State var roomnum = ""
+    @State var framerate = ""
     var body: some View{
         switch created{
         case 1:
             createView(created: $created, roomnum: $roomnum)
         case 2:
-            joinView(created: $created, roomnum: $roomnum)
+            joinView(created: $created, roomnum: $roomnum, framerate: $framerate)
         case 3:
-            recordView(created: $created, roomnum: $roomnum, audioRecorder: AudioRecorder())
+            recordView(created: $created, roomnum: $roomnum, framerate: $framerate, audioRecorder: AudioRecorder())
         case 4:
             cameraview(created: $created, roomnum: $roomnum)
             

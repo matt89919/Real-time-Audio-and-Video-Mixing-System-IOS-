@@ -14,6 +14,7 @@ import AVFoundation
 struct joinView: View {
     @Binding var created:Int
     @Binding var roomnum:String
+    @Binding var framerate:String
     var textFieldBorder: some View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.gray, lineWidth: 5)
@@ -53,6 +54,27 @@ struct joinView: View {
                 
                 HStack{
                     Button{
+                        let sendtoserver="roomcode="+roomnum
+                        let url = URL(string: "http://140.116.82.135:5000/sendsettingtoclient")!
+                        var request = URLRequest(url: url)
+                        request.httpMethod = "POST"
+                        let dat=sendtoserver.data(using: .utf8)
+                        request.httpBody=dat
+
+                        URLSession.shared.dataTask(with: request){ data, response, error in
+                            guard let data = data,
+                                  let response = response as? HTTPURLResponse,
+                                  error == nil else{
+                                  print("err")
+                                  return
+                            }
+                            
+                            let str = String(data:data, encoding: .utf8)
+                            print(str ?? "no response")
+                            framerate=str ?? "44100"
+
+                        }.resume()
+                        
                         created=3
                     }label: {
                         ZStack{
