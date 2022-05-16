@@ -11,6 +11,57 @@ import Foundation
 import Combine
 import AVFoundation
 
+//still have some problem deal with server
+func downloadFile(roomnum: String) {
+    var isDownloading = true
+
+    let docsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+
+    let destinationUrl = docsUrl?.appendingPathComponent("\(roomnum).mp4")
+
+    if let destinationUrl = destinationUrl {
+        if FileManager().fileExists(atPath: destinationUrl.path) {
+            print("File already exists")
+            isDownloading = false
+        } else {
+            var request = URLRequest(url: URL(string: "http://140.116.82.135:5000/Download")!)
+            request.httpMethod = "POST"
+            let sendtoserver="roomnum="+roomnum
+            let dat=sendtoserver.data(using: .utf8)
+            request.httpBody=dat
+
+            let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                if let error = error {
+                    print("Request error: ", error)
+                    isDownloading = false
+                    return
+                }
+
+                guard let response = response as? HTTPURLResponse else { return }
+
+                if response.statusCode == 200 {
+                    guard let data = data else {
+                        isDownloading = false
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        do {
+                            try data.write(to: destinationUrl, options: Data.WritingOptions.atomic)
+                            DispatchQueue.main.async {
+                                isDownloading = false
+                            }
+                        } catch let error {
+                            print("Error decoding: ", error)
+                            isDownloading = false
+                        }
+                    }
+                }
+            }
+            dataTask.resume()
+        }
+    }
+}
+
 struct joinView: View {
     @Binding var created:Int
     @Binding var roomnum:String
@@ -40,6 +91,7 @@ struct joinView: View {
                 Spacer()
                 
                 Button{
+                    downloadFile(roomnum: roomnum)
                     
                 }label: {
                     Text("Download video")

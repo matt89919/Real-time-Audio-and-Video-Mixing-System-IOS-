@@ -11,40 +11,37 @@ import Foundation
 import Combine
 import AVFoundation
 
+var filepath: String = ""
+
 struct VideoRecordingView: UIViewRepresentable {
     
-    @Binding var timeLeft: Int
-    @Binding var onComplete: Bool
     @Binding var recording: Bool
+    @Binding var valid: Bool
     
     func makeUIView(context: UIViewRepresentableContext<VideoRecordingView>) -> PreviewView {
         let recordingView = PreviewView()
-        recordingView.onComplete = {
-            self.onComplete = true
-        }
-        
-        recordingView.onRecord = { timeLeft, totalShakes in
-            self.timeLeft = timeLeft
-            self.recording = true
-        }
-        
-        recordingView.onReset = {
-            self.recording = false
-            self.timeLeft = 30
-        }
+        recordingView.recording=recording
+
         return recordingView
     }
     
     func updateUIView(_ uiViewController: PreviewView, context: UIViewRepresentableContext<VideoRecordingView>) {
-        if recording {
-            uiViewController.start()
+        if recording
+        {
+            uiViewController.startRecording()
+            
+        }else
+        {
+            uiViewController.stopRecording()
+            
         }
     }
+    
 }
-
 extension PreviewView: AVCaptureFileOutputRecordingDelegate{
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         print(outputFileURL.absoluteString)
+        
     }
 }
 
@@ -53,12 +50,11 @@ class PreviewView: UIView {
     private var shakeCountDown: Timer?
     let videoFileOutput = AVCaptureMovieFileOutput()
     var recordingDelegate:AVCaptureFileOutputRecordingDelegate!
-    var recorded = 0
-    var secondsToReachGoal = 30
+    var recording = false
+    var recorded = false
     
-    var onRecord: ((Int, Int)->())?
-    var onReset: (() -> ())?
-    var onComplete: (() -> ())?
+    
+
     
     init() {
         super.init(frame: .zero)
@@ -82,7 +78,7 @@ class PreviewView: UIView {
         session.beginConfiguration()
         
         let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                  for: .video, position: .front)
+                                                  for: .video, position: .back)
         guard videoDevice != nil, let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!), session.canAddInput(videoDeviceInput) else {
             print("!!! NO CAMERA DETECTED")
             return
@@ -107,54 +103,46 @@ class PreviewView: UIView {
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         recordingDelegate = self
-    }
-    
-    func start() {
-        startTimers()
         if nil != self.superview {
             self.videoPreviewLayer.session = self.captureSession
             self.videoPreviewLayer.videoGravity = .resizeAspect
             self.captureSession?.startRunning()
-            self.startRecording()
         } else {
             self.captureSession?.stopRunning()
         }
     }
-    private func onTimerFires(){
-        print("🟢 RECORDING \(videoFileOutput.isRecording)")
-        secondsToReachGoal -= 1
-        recorded += 1
-        onRecord?(secondsToReachGoal, recorded)
-        
-        if(secondsToReachGoal == 0){
-            stopRecording()
-            shakeCountDown?.invalidate()
-            shakeCountDown = nil
-            onComplete?()
-            videoFileOutput.stopRecording()
-        }
-    }
-    
-    func startTimers(){
-        if shakeCountDown == nil {
-            shakeCountDown = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] (timer) in
-                self?.onTimerFires()
-            }
-        }
-    }
     
     func startRecording(){
-        captureSession?.addOutput(videoFileOutput)
+            recording = true
+            
+            captureSession?.addOutput(videoFileOutput)
+            print("start RECORDING \(videoFileOutput.isRecording)")
+            
+            let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let filePath = documentsURL.appendingPathComponent("\(Date().toString(dateFormat: "YYYY_MM_dd_HH_mm_ss"))")
+            filepath=filePath.path
+            
+            videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
         
-        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let filePath = documentsURL.appendingPathComponent("tempPZDC")
-        
-        videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
+            let d = Date()
+            let df = DateFormatter()
+            df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+            let timestamp1=df.string(from: d)
+            print(timestamp1)
     }
     
     func stopRecording(){
+        recording = false
+        recorded = true
         videoFileOutput.stopRecording()
+        
         print("🔴 RECORDING \(videoFileOutput.isRecording)")
+        
+        let d = Date()
+        let df = DateFormatter()
+        df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+        let timestamp1=df.string(from: d)
+        print(timestamp1)
     }
 }
 
@@ -162,43 +150,98 @@ class PreviewView: UIView {
 struct cameraview: View {
     @Binding var created:Int
     @Binding var roomnum:String
-    @State private var timer = 5
-    @State private var onComplete = false
     @State private var recording = false
+    @State var valid = true
+    @State var recorded = false
+    @State var timestamp1 = ""
+    @State var timestamp2 = ""
+    @State var fileurl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    
+        
+    
+
+    
     
     var body: some View {
-        ZStack {
-            VideoRecordingView(timeLeft: $timer, onComplete: $onComplete, recording: $recording)
-            VStack {
-                Button(action: {self.recording.toggle()}, label: {
-                ZStack {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 65, height: 65)
+                
+            ZStack{
+                VStack
+                {
+                    Spacer()
+                    if recorded == false{
+                        VideoRecordingView(recording: $recording, valid: $valid)
+                    }else{
+                        Text("starting timestamp: \n"+timestamp1)
+                            .font(.system(size: 25))
+                            .foregroundColor(.gray)
+                            .padding()
+                        
+                        Text("stopping timestamp: \n"+timestamp2)
+                            .font(.system(size: 25))
+                            .foregroundColor(.gray)
+                            .padding()
                     
-                    Circle()
-                        .stroke(Color.white,lineWidth: 2)
-                        .frame(width: 75, height: 75)
+                    
+                        Text(filepath)
+                            .font(.system(size: 20))
+                            .foregroundColor(.gray)
+                            .padding()
+                    }
+                    Spacer()
                 }
-            })
-                Button(action: {
-                    self.timer -= 1
-                    print(self.timer)
-                }, label: {
-                    Text("Toggle timer")
-                })
-                    .foregroundColor(.white)
-                    .padding()
-                Button(action: {
-                    self.onComplete.toggle()
-                }, label: {
-                    Text("Toggle completion")
-                })
-                    .foregroundColor(.white)
-                    .padding()
-            }
+                    VStack {
+                        HStack{
+                            Button{
+                                created=2
+                            }label: {
+                                Image(systemName: "chevron.left")
+                                    .foregroundColor(Color.gray)
+                                    .font(.system(size: 40))
+                                    .padding()
+                            }
+                            
+                            Spacer()
+                            
+                        }
+                        
+                        
+                        Spacer()
+                        
+                        Button
+                        {
+                            self.recording.toggle()
+                            if recording
+                            {
+                                let d = Date()
+                                let df = DateFormatter()
+                                df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+                                timestamp1=df.string(from: d)
+                            }else{
+                                let d = Date()
+                                let df = DateFormatter()
+                                df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+                                timestamp2=df.string(from: d)
+                                if timestamp1 != ""
+                                {
+                                    recorded=true
+                                }
+                            }
+                        }label: {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 65, height: 65)
+                                
+                                Circle()
+                                    .stroke(Color.white,lineWidth: 2)
+                                    .frame(width: 75, height: 75)
+                            }
+                        }
+                        
+
+                    }
         }
-    }
+        }
 }
 
 

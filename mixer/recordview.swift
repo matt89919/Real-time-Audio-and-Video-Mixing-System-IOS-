@@ -49,12 +49,12 @@ struct recordView: View {
             
             Spacer()
             if(recorded){
-                Text("starting timestamp: "+timestamp1)
+                Text("starting timestamp: \n"+timestamp1)
                     .font(.system(size: 25))
                     .foregroundColor(.gray)
                     .padding()
                 
-                Text("stopping timestamp: "+timestamp2)
+                Text("stopping timestamp: \n"+timestamp2)
                     .font(.system(size: 25))
                     .foregroundColor(.gray)
                     .padding()
@@ -81,7 +81,12 @@ struct recordView: View {
                 if audioRecorder.recording == false {
                     Button(action: {
                         fileurl = self.audioRecorder.startRecording(framerate: framerate)
-                        timestamp1="\(Date().millisecondsSince1970)\n"
+                        //get current timestamp
+                        let d = Date()
+                        let df = DateFormatter()
+                        df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+                        timestamp1=df.string(from: d)
+
                         startTimer()
                         file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".m4a", with: ".txt")
                     }) {
@@ -96,12 +101,17 @@ struct recordView: View {
                 } else {
                     Button{
                         self.audioRecorder.stopRecording()
-                        timestamp2="\(Date().millisecondsSince1970)"
+                        
+                        let d = Date()
+                        let df = DateFormatter()
+                        df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+                        timestamp2=df.string(from: d)
+                        
                         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                             infourl = dir.appendingPathComponent(file)
                             //writing
                             do {
-                                let tsinfo=timestamp1+timestamp2
+                                let tsinfo=timestamp1+"\n"+timestamp2
                                 try tsinfo.write(to: infourl, atomically: false, encoding: .utf8)
                             }
                             catch {
@@ -132,12 +142,7 @@ struct recordView: View {
                         let filename = fileurl.lastPathComponent
                         let infoname = infourl.lastPathComponent
                         let url = URL(string: "http://140.116.82.135:5000/Audio_store")!
-    //                        let headers : Alamofire.HTTPHeaders = [
-    //                                    "cache-control" : "no-cache",
-    //                                    "Accept-Language" : "en",
-    //                                    "Connection" : "close"
-    //                                ]
-                             //generate boundary string using a unique per-app string
+  
                         let boundary = UUID().uuidString
                                                     let session = URLSession.shared
                                                     var urlRequest = URLRequest(url: url)
