@@ -11,7 +11,7 @@ import Foundation
 import Combine
 import AVFoundation
 
-var filepath: String = ""
+var filepath: URL?
 
 struct VideoRecordingView: UIViewRepresentable {
     
@@ -49,9 +49,11 @@ class PreviewView: UIView {
     private var captureSession: AVCaptureSession?
     private var shakeCountDown: Timer?
     let videoFileOutput = AVCaptureMovieFileOutput()
+    
     var recordingDelegate:AVCaptureFileOutputRecordingDelegate!
     var recording = false
     var recorded = false
+    
     
     
 
@@ -114,13 +116,17 @@ class PreviewView: UIView {
     
     func startRecording(){
             recording = true
-            
+            let connection = videoFileOutput.connection(with: .video)
+            if videoFileOutput.availableVideoCodecTypes.contains(.h264) {
+                // Use the H.264 codec to encode the video.
+                videoFileOutput.setOutputSettings([AVVideoCodecKey: AVVideoCodecType.h264], for: connection!)
+            }
             captureSession?.addOutput(videoFileOutput)
             print("start RECORDING \(videoFileOutput.isRecording)")
             
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let filePath = documentsURL.appendingPathComponent("\(Date().toString(dateFormat: "YYYY_MM_dd_HH_mm_ss"))")
-            filepath=filePath.path
+            let filePath = documentsURL.appendingPathComponent("\(Date().toString(dateFormat: "YYYY_MM_dd_HH_mm_ss")).mov")
+            filepath=filePath
             
             videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
         
@@ -168,9 +174,11 @@ struct cameraview: View {
                 VStack
                 {
                     Spacer()
-                    if recorded == false{
+                    if !recorded
+                    {
                         VideoRecordingView(recording: $recording, valid: $valid)
-                    }else{
+                    }else
+                    {
                         Text("starting timestamp: \n"+timestamp1)
                             .font(.system(size: 25))
                             .foregroundColor(.gray)
@@ -182,65 +190,132 @@ struct cameraview: View {
                             .padding()
                     
                     
-                        Text(filepath)
+                        Text(filepath!.absoluteString)
                             .font(.system(size: 20))
                             .foregroundColor(.gray)
                             .padding()
                     }
                     Spacer()
                 }
-                    VStack {
-                        HStack{
-                            Button{
-                                created=2
-                            }label: {
-                                Image(systemName: "chevron.left")
-                                    .foregroundColor(Color.gray)
-                                    .font(.system(size: 40))
-                                    .padding()
+                VStack
+                {
+                            HStack{
+                                Button{
+                                    created=2
+                                }label: {
+                                    Image(systemName: "chevron.left")
+                                        .foregroundColor(Color.gray)
+                                        .font(.system(size: 40))
+                                        .padding()
+                                }
+                                
+                                Spacer()
+                                
                             }
-                            
-                            Spacer()
-                            
-                        }
                         
                         
                         Spacer()
-                        
-                        Button
+                    
+                        if !recorded
                         {
-                            self.recording.toggle()
-                            if recording
+                            Button
                             {
-                                let d = Date()
-                                let df = DateFormatter()
-                                df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-                                timestamp1=df.string(from: d)
-                            }else{
-                                let d = Date()
-                                let df = DateFormatter()
-                                df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-                                timestamp2=df.string(from: d)
-                                if timestamp1 != ""
+                                self.recording.toggle()
+                                if recording
                                 {
-                                    recorded=true
+                                    let d = Date()
+                                    let df = DateFormatter()
+                                    df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+                                    timestamp1=df.string(from: d)
+                                }else{
+                                    let d = Date()
+                                    let df = DateFormatter()
+                                    df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
+                                    timestamp2=df.string(from: d)
+                                    if timestamp1 != ""
+                                    {
+                                        recorded=true
+                                    }
+                                }
+                            }label: {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.red)
+                                        .frame(width: 65, height: 65)
+                                    
+                                    Circle()
+                                        .stroke(Color.white,lineWidth: 2)
+                                        .frame(width: 75, height: 75)
                                 }
                             }
-                        }label: {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.red)
-                                    .frame(width: 65, height: 65)
-                                
-                                Circle()
-                                    .stroke(Color.white,lineWidth: 2)
-                                    .frame(width: 75, height: 75)
+                        }else
+                        {
+                            Button{
+                                if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                                    let fp = filepath
+                                    let file = "video_time_info"+fp!.lastPathComponent.replacingOccurrences(of: ".mov", with: ".txt")
+                                    let infourl = dir.appendingPathComponent(file)
+                                    //writing
+                                    do {
+                                        let tsinfo=timestamp1+"\n"+timestamp2
+                                        try tsinfo.write(to: infourl, atomically: false, encoding: .utf8)
+                                        print("success")
+                                        print(infourl)
+                                    }
+                                    catch {
+                                        print("error txt")
+                                    }
+                                    
+                                    let videoData = try? Data(contentsOf: fp!)
+                                    let infodata = try? Data(contentsOf: infourl)
+                                    let filename = filepath!.lastPathComponent
+                                    let infoname = infourl.lastPathComponent
+                                    let url = URL(string: "http://140.116.82.135:5000/Video_store")!
+              
+                                    let boundary = UUID().uuidString
+                                    let session = URLSession.shared
+                                    var urlRequest = URLRequest(url: url)
+                                    urlRequest.httpMethod = "POST"
+                                    urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+                                    var data = Data()
+
+                                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
+                                    data.append("Content-Disposition: form-data; name=\"video\"; filename=\"\(filename)\"\r\n\r\n".data(using: .utf8)!)
+                                    data.append(videoData!)
+                                    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+                                    data.append("Content-Disposition: form-data; name=\"video_info\"; filename=\"\(infoname)\"\r\n\r\n".data(using: .utf8)!)
+                                    data.append(infodata!)
+                                    data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+                                    data.append("Content-Disposition: form-data; name=\"room_number\"\r\n\r\n\(roomnum)".data(using: .utf8)!)
+                                    data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+
+                                    // Send a POST request to the URL, with the data we created earlier
+                                    session.uploadTask(with: urlRequest, from: data, completionHandler: { data, response, error in
+                                        guard let data = data,
+                                              let response = response as? HTTPURLResponse,
+                                              error == nil else{
+                                              print("err")
+                                              return
+                                        }
+                                        let str = String(data:data, encoding: .utf8)
+                                        print(str ?? "no response")
+                                       // responsestr = str ?? ""
+                                    }).resume()
+                                }
+                            }label: {
+                                Image(systemName: "square.and.arrow.up.fill")
+                                    .resizable()
+                                    .frame(width: 40, height: 50)
+                                    
+                                    .foregroundColor(.gray)
+                                    .padding(.bottom, 40)
                             }
                         }
                         
 
                     }
-        }
+            }
         }
 }
 
