@@ -40,6 +40,7 @@ struct VideoRecordingView: UIViewRepresentable {
     }
     
 }
+
 extension PreviewView: AVCaptureFileOutputRecordingDelegate{
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         print(outputFileURL.absoluteString)
@@ -127,7 +128,7 @@ class PreviewView: UIView {
             print("start RECORDING \(videoFileOutput.isRecording)")
             
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let filePath = documentsURL.appendingPathComponent("\(ts1.prefix(19)).mov")
+        let filePath = documentsURL.appendingPathComponent("\(ts1.prefix(19)).mp4")
             filepath=filePath
             
             videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
@@ -240,7 +241,7 @@ struct cameraview: View {
                             Button{
                                 if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                                     let fp = filepath
-                                    let file = "video_time_info"+fp!.lastPathComponent.replacingOccurrences(of: ".mov", with: ".txt")
+                                    let file = "video_time_info"+fp!.lastPathComponent.replacingOccurrences(of: ".mp4", with: ".txt")
                                     let infourl = dir.appendingPathComponent(file)
                                     //writing
                                     do {
@@ -287,7 +288,9 @@ struct cameraview: View {
                                         }
                                         let str = String(data:data, encoding: .utf8)
                                         print(str ?? "no response")
-                                       // responsestr = str ?? ""
+                                        if(str == "OK, Video upload finished" || str == "You have already uploaded the Video"){
+                                            created=5
+                                        }
                                     }).resume()
                                 }
                             }label: {

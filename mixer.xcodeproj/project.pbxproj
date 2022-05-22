@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9496195283A14250009F4B4 /* composeview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9496194283A14250009F4B4 /* composeview.swift */; };
+		C9496197283A2F850009F4B4 /* watchview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9496196283A2F850009F4B4 /* watchview.swift */; };
 		C967D2DC281BB6A700783351 /* createview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DB281BB6A700783351 /* createview.swift */; };
 		C967D2DE281BB72500783351 /* joinview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DD281BB72500783351 /* joinview.swift */; };
 		C967D2E0281BB78B00783351 /* firstview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2DF281BB78B00783351 /* firstview.swift */; };
@@ -45,6 +47,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C9496194283A14250009F4B4 /* composeview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = composeview.swift; sourceTree = "<group>"; };
+		C9496196283A2F850009F4B4 /* watchview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = watchview.swift; sourceTree = "<group>"; };
 		C967D2DB281BB6A700783351 /* createview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = createview.swift; sourceTree = "<group>"; };
 		C967D2DD281BB72500783351 /* joinview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = joinview.swift; sourceTree = "<group>"; };
 		C967D2DF281BB78B00783351 /* firstview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = firstview.swift; sourceTree = "<group>"; };
@@ -120,7 +124,9 @@
 			children = (
 				C9A8F31127F20A7C00F250B1 /* Info.plist */,
 				C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */,
+				C9496196283A2F850009F4B4 /* watchview.swift */,
 				C9A8F2E927F19BEE00F250B1 /* ContentView.swift */,
+				C9496194283A14250009F4B4 /* composeview.swift */,
 				C967D2DB281BB6A700783351 /* createview.swift */,
 				C967D2DD281BB72500783351 /* joinview.swift */,
 				C967D2DF281BB78B00783351 /* firstview.swift */,
@@ -299,6 +305,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9496197283A2F850009F4B4 /* watchview.swift in Sources */,
+				C9496195283A14250009F4B4 /* composeview.swift in Sources */,
 				C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */,
 				C967D2E0281BB78B00783351 /* firstview.swift in Sources */,
 				C967D2DE281BB72500783351 /* joinview.swift in Sources */,
@@ -396,7 +404,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -451,7 +459,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

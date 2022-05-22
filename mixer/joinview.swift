@@ -11,8 +11,9 @@ import Foundation
 import Combine
 import AVFoundation
 
+var downloaded=false
 //still have some problem deal with server
-func downloadFile(roomnum: String) {
+func downloadFile(roomnum: String) -> String{
     var isDownloading = true
 
     let docsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
@@ -23,10 +24,11 @@ func downloadFile(roomnum: String) {
         if FileManager().fileExists(atPath: destinationUrl.path) {
             print("File already exists")
             isDownloading = false
+            return "File already exists"
         } else {
-            var request = URLRequest(url: URL(string: "http://140.116.82.135:5000/Download")!)
+            var request = URLRequest(url: URL(string: "http://140.116.82.135:5000/Download_get_roomnumber")!)
             request.httpMethod = "POST"
-            let sendtoserver="roomnum="+roomnum
+            let sendtoserver="roomcode="+roomnum
             let dat=sendtoserver.data(using: .utf8)
             request.httpBody=dat
 
@@ -42,6 +44,7 @@ func downloadFile(roomnum: String) {
                 if response.statusCode == 200 {
                     guard let data = data else {
                         isDownloading = false
+                        print("200")
                         return
                     }
                     DispatchQueue.main.async {
@@ -50,6 +53,8 @@ func downloadFile(roomnum: String) {
                             DispatchQueue.main.async {
                                 isDownloading = false
                             }
+                            print("download success")
+                            downloaded=true
                         } catch let error {
                             print("Error decoding: ", error)
                             isDownloading = false
@@ -59,6 +64,23 @@ func downloadFile(roomnum: String) {
             }
             dataTask.resume()
         }
+        
+    }
+    return "processing"
+}
+
+func checkFileExists(roomnum: Int) -> Bool{
+    let docsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+
+    let destinationUrl = docsUrl?.appendingPathComponent("\(roomnum).mp4")
+    if let destinationUrl = destinationUrl {
+        if (FileManager().fileExists(atPath: destinationUrl.path)) {
+            return true
+        } else {
+            return false
+        }
+    } else {
+        return false
     }
 }
 
@@ -66,6 +88,7 @@ struct joinView: View {
     @Binding var created:Int
     @Binding var roomnum:String
     @Binding var framerate:String
+    @State var process=""
     var textFieldBorder: some View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.gray, lineWidth: 5)
@@ -90,9 +113,14 @@ struct joinView: View {
                 
                 Spacer()
                 
+                
                 Button{
-                    downloadFile(roomnum: roomnum)
-                    
+                    process=downloadFile(roomnum: roomnum)
+                    if(process=="File already exists"){
+                        downloaded=true
+                        created=6
+                        pre=2
+                    }
                 }label: {
                     Text("Download video")
                         .padding()
@@ -100,6 +128,17 @@ struct joinView: View {
                         .font(.system(size: 30))
                         .background(Color.gray)
                         .cornerRadius(10)
+                }
+                .onChange(of: downloaded, perform: { _ in
+                    created=6
+                    pre=2
+                })
+                
+                if(process=="processing"){
+                    Text("Downloading video ...")
+                        .padding()
+                        .font(.system(size: 20))
+                        .foregroundColor(Color.red)
                 }
                 
                 Spacer()
@@ -169,12 +208,12 @@ struct joinView: View {
                         }
                     }
                     
-                    
-                    
+
                 }
                 
                 Spacer()
-            
+                    
+                
             }
     }
 }

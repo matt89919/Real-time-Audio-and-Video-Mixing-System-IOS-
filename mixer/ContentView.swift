@@ -40,6 +40,7 @@ public func getTS() -> String
     return responsestr
 }
 
+
 struct ContentView: View {
     @State var created = 0
     @State var roomnum = ""
@@ -54,6 +55,12 @@ struct ContentView: View {
             recordView(created: $created, roomnum: $roomnum, framerate: $framerate, audioRecorder: AudioRecorder())
         case 4:
             cameraview(created: $created, roomnum: $roomnum)
+            
+        case 5:
+            composeview(created: $created, roomnum: $roomnum)
+            
+        case 6:
+            watchview(created: $created, roomnum: $roomnum)
             
         default:
             firstview(created: $created, roomnum: $roomnum)
