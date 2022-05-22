@@ -17,6 +17,8 @@ struct VideoRecordingView: UIViewRepresentable {
     
     @Binding var recording: Bool
     @Binding var valid: Bool
+    @Binding var ts1: String
+    @Binding var ts2: String
     
     func makeUIView(context: UIViewRepresentableContext<VideoRecordingView>) -> PreviewView {
         let recordingView = PreviewView()
@@ -28,11 +30,11 @@ struct VideoRecordingView: UIViewRepresentable {
     func updateUIView(_ uiViewController: PreviewView, context: UIViewRepresentableContext<VideoRecordingView>) {
         if recording
         {
-            uiViewController.startRecording()
+            uiViewController.startRecording(ts1: ts1)
             
         }else
         {
-            uiViewController.stopRecording()
+            uiViewController.stopRecording(ts2: ts2)
             
         }
     }
@@ -114,7 +116,7 @@ class PreviewView: UIView {
         }
     }
     
-    func startRecording(){
+    func startRecording(ts1:String){
             recording = true
             let connection = videoFileOutput.connection(with: .video)
             if videoFileOutput.availableVideoCodecTypes.contains(.h264) {
@@ -125,29 +127,23 @@ class PreviewView: UIView {
             print("start RECORDING \(videoFileOutput.isRecording)")
             
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let filePath = documentsURL.appendingPathComponent("\(Date().toString(dateFormat: "YYYY_MM_dd_HH_mm_ss")).mov")
+        let filePath = documentsURL.appendingPathComponent("\(ts1.prefix(19)).mov")
             filepath=filePath
             
             videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
         
-            let d = Date()
-            let df = DateFormatter()
-            df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-            let timestamp1=df.string(from: d)
+            let timestamp1=ts1
             print(timestamp1)
     }
     
-    func stopRecording(){
+    func stopRecording(ts2:String){
         recording = false
         recorded = true
         videoFileOutput.stopRecording()
         
         print("🔴 RECORDING \(videoFileOutput.isRecording)")
         
-        let d = Date()
-        let df = DateFormatter()
-        df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-        let timestamp1=df.string(from: d)
+        let timestamp1=ts2
         print(timestamp1)
     }
 }
@@ -163,10 +159,6 @@ struct cameraview: View {
     @State var timestamp2 = ""
     @State var fileurl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     
-        
-    
-
-    
     
     var body: some View {
                 
@@ -176,7 +168,7 @@ struct cameraview: View {
                     Spacer()
                     if !recorded
                     {
-                        VideoRecordingView(recording: $recording, valid: $valid)
+                        VideoRecordingView(recording: $recording, valid: $valid, ts1: $timestamp1, ts2: $timestamp2)
                     }else
                     {
                         Text("starting timestamp: \n"+timestamp1)
@@ -220,23 +212,18 @@ struct cameraview: View {
                         {
                             Button
                             {
-                                self.recording.toggle()
-                                if recording
+                                
+                                if !recording
                                 {
-                                    let d = Date()
-                                    let df = DateFormatter()
-                                    df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-                                    timestamp1=df.string(from: d)
+                                    timestamp1=getTS()
                                 }else{
-                                    let d = Date()
-                                    let df = DateFormatter()
-                                    df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-                                    timestamp2=df.string(from: d)
+                                    timestamp2=getTS()
                                     if timestamp1 != ""
                                     {
                                         recorded=true
                                     }
                                 }
+                                self.recording.toggle()
                             }label: {
                                 ZStack {
                                     Circle()

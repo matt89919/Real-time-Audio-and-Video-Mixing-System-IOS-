@@ -56,7 +56,7 @@ class AudioRecorder: NSObject,ObservableObject {
         }
     }
     
-    func startRecording(framerate:String) -> URL{
+    func startRecording(framerate:String, ts:String) -> URL{
         print(framerate)
         let recordingSession = AVAudioSession.sharedInstance()
         do {
@@ -68,7 +68,7 @@ class AudioRecorder: NSObject,ObservableObject {
         
         
         let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let audioFilename = documentPath.appendingPathComponent("\(Date().toString(dateFormat: "YYYY_MM_dd_HH_mm_ss")).m4a")
+        let audioFilename = documentPath.appendingPathComponent("\(ts.prefix(19)).3gp")
         
         ////////
         let settings = [

@@ -11,6 +11,35 @@ import Foundation
 import Combine
 import AVFoundation
 
+public func getTS() -> String
+{
+    var responsestr=""
+    let sendtoserver="date_request=1"
+    let url = URL(string: "http://140.116.82.135:5000/timesynchronize")!
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    let dat=sendtoserver.data(using: .utf8)
+    request.httpBody=dat
+
+    URLSession.shared.dataTask(with: request){ data, response, error in
+        guard let data = data,
+              let response = response as? HTTPURLResponse,
+              error == nil else{
+              print("err")
+              return
+        }
+        
+        let str = String(data:data, encoding: .utf8)
+        print(str ?? "no response")
+        responsestr = str ?? ""
+
+    }.resume()
+    
+    while(responsestr==""){}
+    
+    return responsestr
+}
+
 struct ContentView: View {
     @State var created = 0
     @State var roomnum = ""

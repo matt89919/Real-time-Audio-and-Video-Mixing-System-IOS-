@@ -80,15 +80,11 @@ struct recordView: View {
                 
                 if audioRecorder.recording == false {
                     Button(action: {
-                        fileurl = self.audioRecorder.startRecording(framerate: framerate)
-                        //get current timestamp
-                        let d = Date()
-                        let df = DateFormatter()
-                        df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-                        timestamp1=df.string(from: d)
-
+                        
+                        timestamp1=getTS()
+                        fileurl = self.audioRecorder.startRecording(framerate: framerate, ts: timestamp1)
                         startTimer()
-                        file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".m4a", with: ".txt")
+                        file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".3gp", with: ".txt")
                     }) {
                         Image(systemName: "record.circle")
                             .resizable()
@@ -102,10 +98,8 @@ struct recordView: View {
                     Button{
                         self.audioRecorder.stopRecording()
                         
-                        let d = Date()
-                        let df = DateFormatter()
-                        df.dateFormat = "y_MM_dd_H_mm_ss_SSS"
-                        timestamp2=df.string(from: d)
+                        
+                        timestamp2=getTS()
                         
                         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                             infourl = dir.appendingPathComponent(file)
