@@ -28,6 +28,8 @@ struct recordView: View {
     @State var timestamp1: String = ""
     @State var timestamp2: String = ""
     @State var infourl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    @State var responsestr="Uploading"
+    @State var press=false
     
     
     var body: some View{
@@ -60,16 +62,23 @@ struct recordView: View {
                     .padding()
             
             
-                Text(fileurl.lastPathComponent)
+                Text("\(fileurl.lastPathComponent)")
                     .font(.system(size: 20))
                     .foregroundColor(.gray)
                     .padding()
             }
+
+                Text("\(hours):\(minutes):\(seconds)")
+                    .font(.system(size: 50))
+                    .foregroundColor(.gray)
+                    .padding(50)
             
-            Text("\(hours):\(minutes):\(seconds)")
-                .font(.system(size: 50))
-                .foregroundColor(.gray)
-                .padding(50)
+            if press{
+                Text(responsestr)
+                    .font(.system(size: 20))
+                    .foregroundColor(.red)
+                    .padding()
+            }
             
             HStack{
                 
@@ -78,59 +87,69 @@ struct recordView: View {
                 Spacer()
                 Spacer()
                 
-                if audioRecorder.recording == false {
-                    Button(action: {
-                        
-                        timestamp1=getTS()
-                        fileurl = self.audioRecorder.startRecording(framerate: framerate, ts: timestamp1)
-                        startTimer()
-                        file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".3gp", with: ".txt")
-                    }) {
-                        Image(systemName: "record.circle")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100, alignment: .center)
-                            .clipped()
-                            .foregroundColor(.red)
-                            .padding(.bottom, 40)
-                    }
-                } else {
-                    Button{
-                        self.audioRecorder.stopRecording()
-                        
-                        
-                        timestamp2=getTS()
-                        
-                        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                            infourl = dir.appendingPathComponent(file)
-                            //writing
-                            do {
-                                let tsinfo=timestamp1+"\n"+timestamp2
-                                try tsinfo.write(to: infourl, atomically: false, encoding: .utf8)
-                            }
-                            catch {
-                                print("error txt")
-                            }
-
-                        stopTimer()
-                        recorded=true
+                
+                if !recorded{
+                    if audioRecorder.recording == false {
+                        Button(action: {
+                            
+                            timestamp1=getTS()
+                            fileurl = self.audioRecorder.startRecording(framerate: framerate, ts: timestamp1)
+                            startTimer()
+                            file = "audio_time_info"+fileurl.lastPathComponent.replacingOccurrences(of: ".3gp", with: ".txt")
+                        }) {
+                            Image(systemName: "record.circle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 100, height: 100, alignment: .center)
+                                .clipped()
+                                .foregroundColor(.red)
+                                .padding(.bottom, 40)
                         }
-                        
-                    } label:{
-                        Image(systemName: "record.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100)
-                            .clipped()
-                            .foregroundColor(.red)
-                            .padding(.bottom, 40.0)
+                    } else {
+                        Button{
+                            self.audioRecorder.stopRecording()
+                            
+                            
+                            timestamp2=getTS()
+                            
+                            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                                infourl = dir.appendingPathComponent(file)
+                                //writing
+                                do {
+                                    let tsinfo=timestamp1+"\n"+timestamp2
+                                    try tsinfo.write(to: infourl, atomically: false, encoding: .utf8)
+                                }
+                                catch {
+                                    print("error txt")
+                                }
+
+                            stopTimer()
+                            recorded=true
+                            }
+                            
+                        } label:{
+                            Image(systemName: "record.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 100, height: 100)
+                                .clipped()
+                                .foregroundColor(.red)
+                                .padding(.bottom, 40.0)
+                        }
                     }
+                }else
+                {
+                    Text("Press to upload =>")
+                        .font(.system(size: 30))
+                        .foregroundColor(.gray)
+                        .padding(.bottom, 40)
                 }
                 
                 Spacer()
                 
                 Button{
                     if(recorded==true){
+                        press=true
                         let voiceData = try? Data(contentsOf: fileurl)
                         let infodata = try? Data(contentsOf: infourl)
                         let filename = fileurl.lastPathComponent
@@ -165,7 +184,7 @@ struct recordView: View {
                                                         }
                                                         let str = String(data:data, encoding: .utf8)
                                                         print(str ?? "no response")
-                                                       // responsestr = str ?? ""
+                                                        responsestr = str ?? ""
                                                     }).resume()
                     }else{
                         print("didnt recorded yet!")
@@ -209,9 +228,6 @@ struct recordView: View {
       
     func stopTimer(){
         timerIsPaused = true
-        minutes=0
-        hours=0
-        seconds=0
         timer?.invalidate()
         timer = nil
     }

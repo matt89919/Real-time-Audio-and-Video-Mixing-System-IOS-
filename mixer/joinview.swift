@@ -12,18 +12,17 @@ import Combine
 import AVFoundation
 
 var downloaded=false
+var processs=""
 //still have some problem deal with server
 func downloadFile(roomnum: String) -> String{
-    var isDownloading = true
-
+    
     let docsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-
     let destinationUrl = docsUrl?.appendingPathComponent("\(roomnum).mp4")
 
     if let destinationUrl = destinationUrl {
         if FileManager().fileExists(atPath: destinationUrl.path) {
             print("File already exists")
-            isDownloading = false
+
             return "File already exists"
         } else {
             var request = URLRequest(url: URL(string: "http://140.116.82.135:5000/Download_get_roomnumber")!)
@@ -35,7 +34,7 @@ func downloadFile(roomnum: String) -> String{
             let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 if let error = error {
                     print("Request error: ", error)
-                    isDownloading = false
+
                     return
                 }
 
@@ -43,21 +42,29 @@ func downloadFile(roomnum: String) -> String{
 
                 if response.statusCode == 200 {
                     guard let data = data else {
-                        isDownloading = false
-                        print("200")
+
+                        print("404")
                         return
                     }
-                    DispatchQueue.main.async {
-                        do {
-                            try data.write(to: destinationUrl, options: Data.WritingOptions.atomic)
-                            DispatchQueue.main.async {
-                                isDownloading = false
+                    let str = String(data:data, encoding: .utf8)
+                    print(str ?? "no response")
+                    if(str=="Haven't composed yet!!!")
+                    {
+                        processs="no video"
+                    }else{
+                        DispatchQueue.main.async {
+                            do {
+                                try data.write(to: destinationUrl, options: Data.WritingOptions.atomic)
+                                DispatchQueue.main.async {
+     
+                                }
+                                print("download success")
+                                downloaded=true
+                                processs="downloaded"
+                            } catch let error {
+                                print("Error decoding: ", error)
+                       
                             }
-                            print("download success")
-                            downloaded=true
-                        } catch let error {
-                            print("Error decoding: ", error)
-                            isDownloading = false
                         }
                     }
                 }
@@ -89,6 +96,7 @@ struct joinView: View {
     @Binding var roomnum:String
     @Binding var framerate:String
     @State var process=""
+
     var textFieldBorder: some View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.gray, lineWidth: 5)
@@ -115,11 +123,65 @@ struct joinView: View {
                 
                 
                 Button{
-                    process=downloadFile(roomnum: roomnum)
-                    if(process=="File already exists"){
-                        downloaded=true
-                        created=6
-                        pre=2
+                    
+                    let docsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+                    let destinationUrl = docsUrl?.appendingPathComponent("\(roomnum).mp4")
+
+                    if let destinationUrl = destinationUrl {
+                        if FileManager().fileExists(atPath: destinationUrl.path) {
+                            print("File already exists")
+                            process="File already exists"
+                            created=6
+                            pre=2
+                        } else {
+                            var request = URLRequest(url: URL(string: "http://140.116.82.135:5000/Download_get_roomnumber")!)
+                            request.httpMethod = "POST"
+                            let sendtoserver="roomcode="+roomnum
+                            let dat=sendtoserver.data(using: .utf8)
+                            request.httpBody=dat
+
+                            let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                                if let error = error {
+                                    print("Request error: ", error)
+                                    return
+                                }
+
+                                guard let response = response as? HTTPURLResponse else { return }
+
+                                if response.statusCode == 200 {
+                                    guard let data = data else {
+                                        print("404")
+                                        return
+                                    }
+                                    let str = String(data:data, encoding: .utf8)
+                                    print(str ?? "no response")
+                                    if(str=="Haven't composed yet!!!")
+                                    {
+                                        process="no video"
+                                    }else{
+                                        DispatchQueue.main.async {
+                                            do {
+                                                try data.write(to: destinationUrl, options: Data.WritingOptions.atomic)
+                                                DispatchQueue.main.async {
+                     
+                                                }
+                                                print("download success")
+                                                downloaded=true
+                                                process="downloaded"
+                                                created=6
+                                                pre=2
+                                            } catch let error {
+                                                print("Error decoding: ", error)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            dataTask.resume()
+                        }
+                        
+                        process="processing"
+                        
                     }
                 }label: {
                     Text("Download video")
@@ -129,17 +191,24 @@ struct joinView: View {
                         .background(Color.gray)
                         .cornerRadius(10)
                 }
-                .onChange(of: downloaded, perform: { _ in
-                    created=6
-                    pre=2
-                })
+                
                 
                 if(process=="processing"){
-                    Text("Downloading video ...")
+                        Text("Downloading video ...")
+                            .padding()
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.red)
+                }
+                
+                if(process=="no video")
+                {
+                    Text("Video haven't composed yet")
                         .padding()
                         .font(.system(size: 20))
                         .foregroundColor(Color.red)
                 }
+                
+                
                 
                 Spacer()
                 
@@ -212,8 +281,14 @@ struct joinView: View {
                 }
                 
                 Spacer()
-                    
-                
+//                    .onChange(of: process, perform: { _ in
+//                        if(process=="downloaded"){
+//                            created=6
+//                            pre=2
+//                        }else{
+//                            print("create failed")
+//                        }
+//                    })
             }
     }
 }

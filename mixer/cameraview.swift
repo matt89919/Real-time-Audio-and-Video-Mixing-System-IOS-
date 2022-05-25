@@ -159,7 +159,7 @@ struct cameraview: View {
     @State var timestamp1 = ""
     @State var timestamp2 = ""
     @State var fileurl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    
+    @State var press=false
     
     var body: some View {
                 
@@ -187,6 +187,14 @@ struct cameraview: View {
                             .font(.system(size: 20))
                             .foregroundColor(.gray)
                             .padding()
+                        
+                        if press
+                        {
+                            Text("Uploading ...")
+                                .font(.system(size: 20))
+                                .foregroundColor(.gray)
+                                .padding(25)
+                        }
                     }
                     Spacer()
                 }
@@ -239,6 +247,7 @@ struct cameraview: View {
                         }else
                         {
                             Button{
+                                press=true
                                 if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                                     let fp = filepath
                                     let file = "video_time_info"+fp!.lastPathComponent.replacingOccurrences(of: ".mp4", with: ".txt")
