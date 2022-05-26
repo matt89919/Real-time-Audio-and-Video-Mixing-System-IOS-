@@ -48,7 +48,7 @@ struct ContentView: View {
     var body: some View{
         switch created{
         case 1:
-            createView(created: $created, roomnum: $roomnum)
+            createView(created: $created, roomnum: $roomnum, framerate: $framerate)
         case 2:
             joinView(created: $created, roomnum: $roomnum, framerate: $framerate)
         case 3:

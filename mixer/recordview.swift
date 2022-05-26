@@ -51,18 +51,18 @@ struct recordView: View {
             
             Spacer()
             if(recorded){
-                Text("starting timestamp: \n"+timestamp1)
+                Text(" ")
                     .font(.system(size: 25))
                     .foregroundColor(.gray)
                     .padding()
                 
-                Text("stopping timestamp: \n"+timestamp2)
+                Text(" ")
                     .font(.system(size: 25))
                     .foregroundColor(.gray)
                     .padding()
             
             
-                Text("\(fileurl.lastPathComponent)")
+                Text(" ")
                     .font(.system(size: 20))
                     .foregroundColor(.gray)
                     .padding()

@@ -108,6 +108,7 @@ struct firstview: View{
                 
                 .onChange(of: responsestr, perform: { _ in
                     if(responsestr.prefix(2)=="Ok"){
+                        pre=0
                         created=1
                     }else if(responsestr.prefix(5)=="No, E"){
                         statemsg="Room exist, please use join"
@@ -158,6 +159,7 @@ struct firstview: View{
                         }
                         .onChange(of: responsestr, perform: { _ in
                             if(responsestr.prefix(3)=="Yes"){
+                                pre=0
                                 created=2
                             }else if(responsestr.prefix(5)=="No, r"){
                                 statemsg="Room not exist, please confirm room number or create it"

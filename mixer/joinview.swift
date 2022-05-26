@@ -120,7 +120,21 @@ struct joinView: View {
                 }
                 
                 Spacer()
+                if(pre==1){
+                    Text("Room: \(roomnum) [HOST]")
+                        .padding(50)
+                        .font(.system(size: 30))
+                        .foregroundColor(Color.gray)
+                }else{
+                    Text("Room: \(roomnum) [Guest]")
+                        .padding(50)
+                        .font(.system(size: 30))
+                        .foregroundColor(Color.gray)
+                }
                 
+                
+                
+               
                 
                 Button{
                     
@@ -128,12 +142,7 @@ struct joinView: View {
                     let destinationUrl = docsUrl?.appendingPathComponent("\(roomnum).mp4")
 
                     if let destinationUrl = destinationUrl {
-                        if FileManager().fileExists(atPath: destinationUrl.path) {
-                            print("File already exists")
-                            process="File already exists"
-                            created=6
-                            pre=2
-                        } else {
+                        
                             var request = URLRequest(url: URL(string: "http://140.116.82.135:5000/Download_get_roomnumber")!)
                             request.httpMethod = "POST"
                             let sendtoserver="roomcode="+roomnum
@@ -182,7 +191,7 @@ struct joinView: View {
                         
                         process="processing"
                         
-                    }
+                    
                 }label: {
                     Text("Download video")
                         .padding()

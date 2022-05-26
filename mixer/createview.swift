@@ -14,6 +14,7 @@ import AVFoundation
 struct createView: View {
     @Binding var created:Int
     @Binding var roomnum:String
+    @Binding var framerate:String
     @State var rate="44100"
     @State var choosenstr="Please select your prefer audio framerate\n(default: 44.1 KHZ)"
     @State var responsestr=""
@@ -85,6 +86,7 @@ struct createView: View {
             }
             
             Button{
+                framerate=rate
                 let sendtoserver="roomnumbersetting="+roomnum+"&audioSetting="+rate
                 let url = URL(string: "http://140.116.82.135:5000/Setting")!
                 var request = URLRequest(url: url)
@@ -116,6 +118,7 @@ struct createView: View {
             
                 .onChange(of: responsestr, perform: { _ in
                     if(responsestr.prefix(2)=="SU"){
+                        pre=1
                         created=2
                     }else{
                         print("create failed")

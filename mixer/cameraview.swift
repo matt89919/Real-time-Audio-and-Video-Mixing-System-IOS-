@@ -172,18 +172,18 @@ struct cameraview: View {
                         VideoRecordingView(recording: $recording, valid: $valid, ts1: $timestamp1, ts2: $timestamp2)
                     }else
                     {
-                        Text("starting timestamp: \n"+timestamp1)
+                        Text(" ")
                             .font(.system(size: 25))
                             .foregroundColor(.gray)
                             .padding()
                         
-                        Text("stopping timestamp: \n"+timestamp2)
+                        Text(" ")
                             .font(.system(size: 25))
                             .foregroundColor(.gray)
                             .padding()
                     
                     
-                        Text(filepath!.absoluteString)
+                        Text(" ")
                             .font(.system(size: 20))
                             .foregroundColor(.gray)
                             .padding()
