@@ -128,7 +128,7 @@ class PreviewView: UIView {
             print("start RECORDING \(videoFileOutput.isRecording)")
             
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let filePath = documentsURL.appendingPathComponent("\(ts1.prefix(19)).mp4")
+        let filePath = documentsURL.appendingPathComponent("\(ts1).mp4")
             filepath=filePath
             
             videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)

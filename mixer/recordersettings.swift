@@ -68,7 +68,7 @@ class AudioRecorder: NSObject,ObservableObject {
         
         
         let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let audioFilename = documentPath.appendingPathComponent("\(ts.prefix(19)).3gp")
+        let audioFilename = documentPath.appendingPathComponent("\(ts).3gp")
         
         ////////
         let settings = [
