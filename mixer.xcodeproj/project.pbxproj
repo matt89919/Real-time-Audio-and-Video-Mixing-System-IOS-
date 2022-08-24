@@ -16,8 +16,6 @@
 		C967D2E4281BB82C00783351 /* recordview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E3281BB82C00783351 /* recordview.swift */; };
 		C967D2E6281BDCFD00783351 /* cameraview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2E5281BDCFD00783351 /* cameraview.swift */; };
 		C967D2E9281FB37B00783351 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = C967D2E8281FB37B00783351 /* Alamofire */; };
-		C967D2EB281FF3DB00783351 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = C967D2EA281FF3DB00783351 /* test.swift */; };
-		C967D2ED282171B500783351 /* test in Resources */ = {isa = PBXBuildFile; fileRef = C967D2EC282171B500783351 /* test */; };
 		C967D2F12821A58F00783351 /* CameraManager in Frameworks */ = {isa = PBXBuildFile; productRef = C967D2F02821A58F00783351 /* CameraManager */; };
 		C9A8F2E827F19BEE00F250B1 /* mixerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */; };
 		C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A8F2E927F19BEE00F250B1 /* ContentView.swift */; };
@@ -55,8 +53,6 @@
 		C967D2E1281BB7F700783351 /* recordersettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordersettings.swift; sourceTree = "<group>"; };
 		C967D2E3281BB82C00783351 /* recordview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recordview.swift; sourceTree = "<group>"; };
 		C967D2E5281BDCFD00783351 /* cameraview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cameraview.swift; sourceTree = "<group>"; };
-		C967D2EA281FF3DB00783351 /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
-		C967D2EC282171B500783351 /* test */ = {isa = PBXFileReference; lastKnownFileType = text; path = test; sourceTree = "<group>"; };
 		C9A8F2E427F19BEE00F250B1 /* mixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mixer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A8F2E727F19BEE00F250B1 /* mixerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mixerApp.swift; sourceTree = "<group>"; };
 		C9A8F2E927F19BEE00F250B1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -133,10 +129,8 @@
 				C967D2E1281BB7F700783351 /* recordersettings.swift */,
 				C967D2E5281BDCFD00783351 /* cameraview.swift */,
 				C967D2E3281BB82C00783351 /* recordview.swift */,
-				C967D2EA281FF3DB00783351 /* test.swift */,
 				C9A8F2EB27F19BF000F250B1 /* Assets.xcassets */,
 				C9A8F2ED27F19BF000F250B1 /* Preview Content */,
-				C967D2EC282171B500783351 /* test */,
 			);
 			path = mixer;
 			sourceTree = "<group>";
@@ -280,7 +274,6 @@
 			files = (
 				C9A8F2EF27F19BF000F250B1 /* Preview Assets.xcassets in Resources */,
 				C9A8F2EC27F19BF000F250B1 /* Assets.xcassets in Resources */,
-				C967D2ED282171B500783351 /* test in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,7 +303,6 @@
 				C9A8F2EA27F19BEE00F250B1 /* ContentView.swift in Sources */,
 				C967D2E0281BB78B00783351 /* firstview.swift in Sources */,
 				C967D2DE281BB72500783351 /* joinview.swift in Sources */,
-				C967D2EB281FF3DB00783351 /* test.swift in Sources */,
 				C9A8F31327F2F31200F250B1 /* Extensions.swift in Sources */,
 				C967D2DC281BB6A700783351 /* createview.swift in Sources */,
 				C967D2E6281BDCFD00783351 /* cameraview.swift in Sources */,
@@ -544,6 +536,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UNYR8R89XY;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MARKETING_VERSION = 1.0;
@@ -563,6 +556,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UNYR8R89XY;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MARKETING_VERSION = 1.0;
@@ -581,6 +575,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UNYR8R89XY;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = test.mixerUITests;
@@ -598,6 +593,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UNYR8R89XY;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = test.mixerUITests;
